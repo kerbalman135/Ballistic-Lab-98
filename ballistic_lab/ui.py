@@ -11,7 +11,8 @@ from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap
 from matplotlib.font_manager import FontProperties, findfont
 from matplotlib.patches import Circle, Polygon
-from matplotlib.patheffects import withStroke
+from matplotlib.patheffects import AbstractPathEffect, withStroke
+from matplotlib.transforms import Affine2D
 from matplotlib.widgets import Button, Slider
 
 from . import game_data as data
@@ -21,6 +22,14 @@ from .icons import CannonIcon, enemy_icon
 from .rendering import ControlRenderer, FlightRenderer, ResponsiveTextBox
 from .themes import THEMES, terrain_texture
 from .settings import display_defaults
+
+
+class _ItalicGlyphs(AbstractPathEffect):
+    """Slant glyphs when the selected family has no separate italic font file."""
+
+    def draw_path(self, renderer, gc, tpath, affine, rgbFace=None):
+        return super().draw_path(renderer, gc, tpath,
+                                 Affine2D().skew_deg(12, 0) + affine, rgbFace)
 
 
 class TrajectoryUI:
@@ -69,7 +78,7 @@ class TrajectoryUI:
         self.font_family = self._font_or_fallback(self.display_settings["font_family"], "DejaVu Sans Mono")
         self.font_scale = self.display_settings["font_scale"]
         self.menu_title_font_family = self._font_or_fallback(data.MENU_TITLE_FONT_FAMILY, data.MENU_FONT_FALLBACK)
-        self.menu_credit_font_family = self._font_or_fallback(data.MENU_CREDIT_FONT_FAMILY, data.MENU_FONT_FALLBACK)
+        self.menu_subtitle_font_family = self._font_or_fallback(data.MENU_SUBTITLE_FONT_FAMILY, data.MENU_FONT_FALLBACK)
 
         # Re-running the launcher replaces its previous window and timer.
         plt.close(self.WINDOW_NAME)
@@ -135,6 +144,14 @@ class TrajectoryUI:
                 continue
             return candidate
         return "DejaVu Sans"
+
+    @staticmethod
+    def _italic_text(artist):
+        artist.set_fontstyle("italic")
+        regular = artist.get_fontproperties().copy()
+        regular.set_style("normal")
+        if findfont(artist.get_fontproperties()) == findfont(regular):
+            artist.set_path_effects([_ItalicGlyphs()])
 
     def _ui_colour(self, role="text"):
         return self.colours.get(f"ui_{role}", self.colours[role])
@@ -937,9 +954,10 @@ class TrajectoryUI:
                 FontProperties(family=self.menu_title_font_family)):
             # Microsoft Sans Serif has no bold face; retain a heavier fallback title.
             title.set_path_effects([withStroke(linewidth=0.55, foreground=title.get_color())])
-        credit = self._text(0.5, 0.71, "Inspired by Iron Nest", ha="center", size=12,
-                            colour="muted", fontstyle="italic")
-        credit.set_fontfamily(self.menu_credit_font_family)
+        subtitle = self._text(0.5, 0.71, "A Solution for Questionable Gravity", ha="center",
+                              size=data.MENU_SUBTITLE_FONT_SIZE, colour="muted")
+        subtitle.set_fontfamily(self.menu_subtitle_font_family)
+        self._italic_text(subtitle)
         if self.settings_warning:
             self._text(0.5, 0.605, textwrap.shorten(self.settings_warning, width=90),
                        ha="center", size=8, colour="muted")
@@ -956,6 +974,9 @@ class TrajectoryUI:
         self._add_button("theme", "THEME", [0.81, 0.055, 0.14, 0.045],
                          self._show_theme, page=True, size=9)
         self._text(0.025, 0.025, "V0.8", size=8, colour="muted", ha="left", va="bottom")
+        credit = self._text(0.5, 0.025, "Inspired by Iron Nest", size=8, colour="muted",
+                            ha="center", va="bottom", fontstyle="italic")
+        self._italic_text(credit)
         self.fig.canvas.draw_idle()
 
     @staticmethod
