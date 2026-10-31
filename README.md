@@ -5,7 +5,22 @@ Aim through changing gravity and wind to hit ground and air targets. Features
 include four shell types, destructible terrain, timed fuses, a shop, timed and
 unlimited rounds, and a saved leaderboard.
 
-## Requirements
+## Download for Windows
+
+[Download Ballistic Lab 98 v0.8 for Windows](https://github.com/kerbalman135/Ballistic-Lab-98/releases/download/v0.8.0/BallisticLab98-v0.8-Windows.zip)
+
+1. Download `BallisticLab98-v0.8-Windows.zip` using the link above.
+2. Extract the **entire ZIP** to a writable folder before running the game.
+3. Open the extracted folder and double-click `BallisticLab.exe`.
+
+**No Python or library installation is needed for the Windows build.**
+Keep `BallisticLab.exe` and the `_internal` folder together.
+
+Other versions are available on the [Releases page](https://github.com/kerbalman135/Ballistic-Lab-98/releases).
+The automatically generated **Source code** archives contain Python source;
+choose the Windows ZIP above for the ready-to-run game.
+
+## Requirements for Running from Source
 
 - **Python 3.12** is recommended.
 - **NumPy** and **Matplotlib** are the only third-party runtime dependencies.
@@ -15,7 +30,7 @@ unlimited rounds, and a saved leaderboard.
 Windows sound uses standard-library modules; other systems run silently.
 No external media files or font installation is required.
 
-## How to Run
+## Run from Source
 
 Keep `main.py` and the entire `ballistic_lab/` folder together. In a terminal
 in the project folder:
@@ -34,9 +49,6 @@ window normally, or press **F11** for fullscreen.
 Control colours follow the theme. **LOAD** changes appearance when ready,
 and an available **FIRE** button is bold and highlighted. Greyscale uses
 dark selections and light loaded packs.
-
-For a Windows EXE release, extract the whole folder and run `BallisticLab.exe`.
-Keep `_internal`; no Python installation is needed.
 
 ### Configuration and Saved Files
 
